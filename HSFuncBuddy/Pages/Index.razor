@@ -1,0 +1,79 @@
+﻿@page "/"
+@using HSFuncBuddy.Application.Models
+@using HSFuncBuddy.Application.DataAccess;
+
+<PageTitle>Index</PageTitle>
+
+
+<MudTabs Elevation="0" Rounded="true" PanelClass="mt-6" @bind-ActivePanelIndex="activeTabIndex">
+
+    <MudTabPanel Text="Functions" Icon="@Icons.Material.Filled.Code" Style="font-size:11px; letter-spacing:.1em;">
+        <code>
+            <ul>
+                @foreach (var item in funcBuddies)
+                {
+                    <li>
+                        @item.title
+
+                    </li>
+                }
+
+            </ul>
+        </code>
+    </MudTabPanel>
+
+    <MudTabPanel Text="Create" Icon="@Icons.Material.Filled.Add" Style="font-size:11px;letter-spacing:.1em;">
+
+        <MudTextField @bind-Value="funcTitle" Placeholder="Description" Margin="Margin.Dense" Variant="Variant.Outlined" Style="font-size:13px;background-color:#f6f8fa"></MudTextField>
+
+        <code>
+            <MudTextField T="string" Variant="Variant.Outlined" Text="" @bind-Value="funcContent" AutoGrow Lines="15" Style="font-size:14px;" />
+         </code>
+
+         <div class="d-flex">
+             <MudButton OnClick="CreateFunc" Class="ml-auto" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Dark" Size="Size.Small" Style="margin-top: 10px;">Save</MudButton>
+         </div>
+
+     </MudTabPanel>
+ </MudTabs>
+
+
+
+
+
+ @code {
+    int activeTabIndex = 0;
+    MudTabPanel tabFunctions;
+
+    List<FuncBuddy> funcBuddies = new();
+
+    string? funcTitle;
+
+    string? funcContent;
+
+
+    protected override void OnInitialized()
+    {
+        FuncBuddyDAO funcBuddyDAO = new FuncBuddyDAO();
+
+        funcBuddies = funcBuddyDAO.RetrieveAll();
+
+    }
+
+    public void CreateFunc()
+    {
+        FuncBuddyDAO funcBuddyDAO = new FuncBuddyDAO();
+        FuncBuddy funcBuddy = new FuncBuddy();
+
+        funcBuddy.title = funcTitle;
+        funcBuddy.content = funcContent;
+
+
+        funcBuddyDAO.Create(funcBuddy);
+        funcBuddies = funcBuddyDAO.RetrieveAll();
+
+        activeTabIndex = 0;
+
+    }
+
+}
